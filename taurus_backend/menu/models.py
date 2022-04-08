@@ -3,7 +3,7 @@ from django.db import models
 
 class Ingredient(models.Model):
     # for example: tomato sauce, mozzarella cheese, pepperoni
-    name = models.CharFiled(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)
     code = models.CharField(max_length=10, unique=True, null=True)
     description = models.CharField(max_length=255, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -19,9 +19,10 @@ class Ingredient(models.Model):
     def __str__(self):
         return "Ingrediente " + self.name
 
+
 class PizzaType(models.Model):
     # for example: pizza, saltimbocca, calzone
-    name = models.CharFiled(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)
     code = models.CharField(max_length=10, unique=True, null=True)
     description = models.CharField(max_length=255, null=True)
 
@@ -31,7 +32,7 @@ class PizzaType(models.Model):
 
 class Size(models.Model):
     # for example: small, regular, large
-    name = models.CharFiled(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)
     code = models.CharField(max_length=10, unique=True, null=True)
     description = models.CharField(max_length=255, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -45,7 +46,7 @@ class Size(models.Model):
 
 class Dough(models.Model):
     # for example: senatore cappelli, integrale
-    name = models.CharFiled(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)
     code = models.CharField(max_length=10, unique=True, null=True)
     description = models.CharField(max_length=255, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -60,7 +61,7 @@ class Dough(models.Model):
 
 class MenuPizza(models.Model):
     # pizzas available on the menu, es. margherita, napoli
-    name = models.CharFiled(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)
     code = models.CharField(max_length=10, unique=True, null=True)
     description = models.CharField(max_length=255, null=True)
     pizza_type = models.ForeignKey(
@@ -93,18 +94,15 @@ class CustomPizza(models.Model):
     is_thick = models.BooleanField(default=False)
     added_ingredients = models.ManyToManyField(Ingredient)
     notes = models.CharField(max_length=255, null=True)
-
-    @property
-    def price(self):
-        return self.calculate_price(self)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def calculate_price(self):
-        menu_pizza_price = self.menu_pizza.get_price(self.menu_pizza)
+        menu_pizza_price = self.menu_pizza.get_price()
         added_ingredients_price = 0
         for added_ingredient in self.added_ingredients:
             added_ingredients_price += added_ingredient.get_price(added_ingredient)
-        addons_price = self.dough.get_price(self.dough)
-        addons_price += self.size.get_price(self.size)
+        addons_price = self.dough.get_price()
+        addons_price += self.size.get_price()
         # FIXME, hardcoded 1, hard to change
         if self.is_thick:
             addons_price += 1
@@ -118,45 +116,41 @@ class CustomPizza(models.Model):
 
 
 class HalfMeterPizza(models.Model):
-    name = models.CharFiled(max_length=50, null=True)
+    name = models.CharField(max_length=50, null=True)
     code = models.CharField(max_length=10, null=True)
-    dough = models.ForeignKey(
-        Dough,
-        on_delete=models.SET_NULL
-    )
     custom_pizza_1 = models.ForeignKey(
         CustomPizza,
-        on_delete=models.SET_NULL
+        related_name="custom_pizza_1",
+        on_delete=models.CASCADE
     )
     custom_pizza_2 = models.ForeignKey(
         CustomPizza,
-        on_delete=models.SET_NULL,
-        null=True
+        related_name="custom_pizza_2",
+        null=True,
+        on_delete=models.CASCADE
     )
     custom_pizza_3 = models.ForeignKey(
         CustomPizza,
-        on_delete=models.SET_NULL,
-        null=True
+        related_name="custom_pizza_3",
+        null=True,
+        on_delete=models.CASCADE
     )
     notes = models.CharField(max_length=255, null=True)
-
-    @property
-    def price(self):
-        return self.calculate_price(self)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def calculate_price(self):
         pizza_price = 0
         if self.custom_pizza_3 is None and self.custom_pizza_2 is None:
-            pizza_price += self.custom_pizza_1.get_price(self.custom_pizza_1)
+            pizza_price += self.custom_pizza_1.get_price()
             pizza_price *= 3
         elif self.custom_pizza_3 is None:
-            pizza_price += self.custom_pizza_1.get_price(self.custom_pizza_1)
-            pizza_price += self.custom_pizza_2.get_price(self.custom_pizza_2)
+            pizza_price += self.custom_pizza_1.get_price()
+            pizza_price += self.custom_pizza_2.get_price()
             pizza_price *= 1.5
         else:
-            pizza_price += self.custom_pizza_1.get_price(self.custom_pizza_1)
-            pizza_price += self.custom_pizza_2.get_price(self.custom_pizza_2)
-            pizza_price += self.custom_pizza_3.get_price(self.custom_pizza_3)
+            pizza_price += self.custom_pizza_1.get_price()
+            pizza_price += self.custom_pizza_2.get_price()
+            pizza_price += self.custom_pizza_3.get_price()
         dough_price = self.dough.get_price(self.dough) * 3
         return pizza_price + dough_price
 
@@ -169,7 +163,7 @@ class HalfMeterPizza(models.Model):
 
 class Beverage(models.Model):
     # for example, coca-cola, water, beer
-    name = models.CharFiled(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)
     code = models.CharField(max_length=10, unique=True, null=True)
     description = models.CharField(max_length=255, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
