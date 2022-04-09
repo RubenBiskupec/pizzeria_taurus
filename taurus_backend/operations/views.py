@@ -4,8 +4,47 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from django.contrib.auth.models import User
 from . models import Customer, Status, Order, Review
-from . serializers import CustomerSerializer, StatusSerializer, OrderSerializer, ReviewSerializer
+from . serializers import UserSerializer, CustomerSerializer, StatusSerializer, OrderSerializer, ReviewSerializer
+
+from pprint import pprint
+
+
+@api_view(['POST'])
+def users(request):
+    print("REUQETS", request)
+    print("REUQETS DATA", request.data)
+    serializer = UserSerializer(
+        data=request.data,
+        context=request.data["customer"]
+    )
+
+    if serializer.is_valid():
+        # instance = user_serializer.save()
+        # Customer.objects.create(user=instance)
+
+        user_instance = serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # print("Instance")
+        # pprint(vars(user_instance))
+    #
+    #     request.data["customer"]["user"] = user_instance.id
+    #     # request.data["customer"]["user"]["id"] = user_instance.id
+    #     #
+    #     pprint(request.data["customer"])
+    #
+    #     customer_serializer = CustomerSerializer(data=request.data["customer"])
+    #     if customer_serializer.is_valid():
+    #         customer_serializer.save()
+    #         return Response(customer_serializer.data, status=status.HTTP_201_CREATED)
+    #     else:
+    #         return Response(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # else:
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST'])
