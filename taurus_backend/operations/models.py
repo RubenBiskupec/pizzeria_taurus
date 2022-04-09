@@ -1,22 +1,33 @@
 from django.db import models
 
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import User, AbstractBaseUser
 from menu.models import CustomPizza, HalfMeterPizza, Beverage
 
 
-class Customer(AbstractBaseUser):
-    is_staff = models.BooleanField(default=False)
-    username = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=50)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+# class Customer(AbstractBaseUser):
+#     is_staff = models.BooleanField(default=False)
+#     username = models.CharField(max_length=50, unique=True)
+#     password = models.CharField(max_length=50)
+#     first_name = models.CharField(max_length=50)
+#     last_name = models.CharField(max_length=50)
+#     # TODO validate email with regex
+#     email = models.CharField(max_length=50)
+#     address = models.CharField(max_length=100)
+#     cellphone_number = models.CharField(max_length=20)
+#
+#     # TODO change username field to email
+#     USERNAME_FIELD = "username"
+
+
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     # TODO validate email with regex
     email = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     cellphone_number = models.CharField(max_length=20)
 
     # TODO change username field to email
-    USERNAME_FIELD = "username"
+    # USERNAME_FIELD = "username"
 
 
 class Status(models.Model):
