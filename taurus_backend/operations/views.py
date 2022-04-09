@@ -5,58 +5,20 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User
-from . models import Customer, Status, Order, Review
-from . serializers import UserSerializer, CustomerSerializer, StatusSerializer, OrderSerializer, ReviewSerializer
-
-from pprint import pprint
-
-
-@api_view(['POST'])
-def users(request):
-    print("REUQETS", request)
-    print("REUQETS DATA", request.data)
-    serializer = UserSerializer(
-        data=request.data,
-        context=request.data["customer"]
-    )
-
-    if serializer.is_valid():
-        # instance = user_serializer.save()
-        # Customer.objects.create(user=instance)
-
-        user_instance = serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # print("Instance")
-        # pprint(vars(user_instance))
-    #
-    #     request.data["customer"]["user"] = user_instance.id
-    #     # request.data["customer"]["user"]["id"] = user_instance.id
-    #     #
-    #     pprint(request.data["customer"])
-    #
-    #     customer_serializer = CustomerSerializer(data=request.data["customer"])
-    #     if customer_serializer.is_valid():
-    #         customer_serializer.save()
-    #         return Response(customer_serializer.data, status=status.HTTP_201_CREATED)
-    #     else:
-    #         return Response(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    # else:
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from . models import User, Status, Order, Review
+from . serializers import UserSerializer, StatusSerializer, OrderSerializer, ReviewSerializer
 
 
 @api_view(['GET', 'POST'])
-def customers(request):
+def users(request):
 
     if request.method == 'GET':
-        customer_list = Customer.objects.all()
-        serializer = CustomerSerializer(customer_list, many=True)
+        user_list = User.objects.all()
+        serializer = UserSerializer(user_list, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = CustomerSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -65,20 +27,20 @@ def customers(request):
 
 
 @api_view(['GET', 'UPDATE', 'DELETE'])
-def customer_details(request, pk=None):
+def user_details(request, pk=None):
 
     try:
-        customer = Customer.objects.get(pk=pk)
-    except Customer.DoesNotExist:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
         Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = CustomerSerializer(customer)
+        serializer = UserSerializer(user)
         return Response(serializer.data)
 
     # TODO non so se va bene, da testare
     elif request.method == 'UPDATE':
-        serializer = CustomerSerializer(customer, data=request.data)
+        serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.update()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -86,7 +48,7 @@ def customer_details(request, pk=None):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        customer .delete()
+        user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

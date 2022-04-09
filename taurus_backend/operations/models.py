@@ -1,57 +1,60 @@
 from django.db import models
-
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.contrib.auth import models as auth_models
+from django.template.defaultfilters import last
 
 from menu.models import CustomPizza, HalfMeterPizza, Beverage
 from pprint import pprint
 
-# class Customer(AbstractBaseUser):
-#     is_staff = models.BooleanField(default=False)
-#     username = models.CharField(max_length=50, unique=True)
-#     password = models.CharField(max_length=50)
-#     first_name = models.CharField(max_length=50)
-#     last_name = models.CharField(max_length=50)
-#     # TODO validate email with regex
-#     email = models.CharField(max_length=50)
-#     address = models.CharField(max_length=100)
-#     cellphone_number = models.CharField(max_length=20)
-#
-#     # TODO change username field to email
-#     USERNAME_FIELD = "username"
+
+class UserManager(auth_models.BaseUserManager):
+
+    def create_user(self, email, password, first_name, last_name, is_staff=False, is_superuser = False):
+        if not email:
+            raise ValueError("User must have an email")
+
+        user = self.model(email=self.normalize_email(email))
+        user.set_password(password)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.is_active = True
+        user.is_staff = is_staff
+        user.is_superuser = is_superuser
+        user.save()
+
+        return user
+
+    def create_superuser(self, email, password, first_name="", last_name=""):
+        user = self.create_user(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password,
+            is_staff=True,
+            is_superuser=True
+        )
+        user.save()
+        return user
 
 
-class Customer(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="customer"
-    )
+class User(auth_models.AbstractUser):
     # TODO validate email with regex
-    email_address = models.CharField(max_length=50)
-    address = models.CharField(max_length=100)
-    cellphone_number = models.CharField(max_length=20)
+    email = models.CharField(max_length=255, unique=True)
+    password = models.CharField(max_length=255)
+    is_staff = models.BooleanField(default=False)
+    username = None
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    cellphone_number = models.CharField(max_length=255)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         # TODO aggiungi nome cliente
-        return "Cliente " + self.user.first_name + self.user.last_name
-
-
-@receiver(post_save, sender=User)
-def create_user_customer(sender, instance, created, **kwargs):
-    if created:
-        print("post_save instance ROBBEN")
-        pprint(vars(instance))
-        prova = Customer.objects.create(
-            user=instance
-        )
-        pprint(vars(prova))
-
-
-@receiver(post_save, sender=User)
-def save_user_customer(sender, instance, **kwargs):
-    instance.customer.save()
+        return "Cliente " + self.first_name + " " + self.last_name
 
 
 class Status(models.Model):
@@ -64,8 +67,8 @@ class Status(models.Model):
 
 
 class Order(models.Model):
-    customer_id = models.ForeignKey(
-        Customer,
+    user_id = models.ForeignKey(
+        User,
         on_delete=models.CASCADE
     )
     is_delivery = models.BooleanField(default=True)
@@ -89,8 +92,8 @@ class Order(models.Model):
 
 
 class Review(models.Model):
-    customer_id = models.ForeignKey(
-        Customer,
+    user_id = models.ForeignKey(
+        User,
         on_delete=models.CASCADE
     )
     order_id = models.ForeignKey(
@@ -102,4 +105,4 @@ class Review(models.Model):
     stars = models.IntegerField()
 
     def __str__(self):
-        return "Recensione " + self.id
+        return "Recensione " + self.title
