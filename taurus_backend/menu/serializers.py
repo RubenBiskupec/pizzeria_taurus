@@ -63,6 +63,7 @@ class MenuPizzaSerializer(serializers.ModelSerializer):
             "ingredients",
             "price",
         )
+        depth = 2
 
 
 class CustomPizzaSerializer(serializers.ModelSerializer):

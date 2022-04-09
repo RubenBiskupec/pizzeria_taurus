@@ -4,7 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser
 from menu.models import CustomPizza, HalfMeterPizza, Beverage
 
 
-class Customer(models.Model):
+class Customer(AbstractBaseUser):
+    is_staff = models.BooleanField(default=False)
     username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=50)
     first_name = models.CharField(max_length=50)
@@ -13,6 +14,9 @@ class Customer(models.Model):
     email = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     cellphone_number = models.CharField(max_length=20)
+
+    # TODO change username field to email
+    USERNAME_FIELD = "username"
 
 
 class Status(models.Model):
