@@ -50,9 +50,9 @@ export default {
 
 <template>
   <v-card
-      flat
-      height="48px"
-      tile
+    flat
+    height="48px"
+    tile
     >
       <v-toolbar
         dense
@@ -61,8 +61,10 @@ export default {
       >
         <v-img
           src="../assets/logo_taurus_transparent.png"
+          v-on:click="navigateTo('home')"
           max-height="40px"
           max-width="40px"
+          class="logo"
         ></v-img>
         <v-toolbar-title class="pl-4 navbar-title">Pizzeria Taurus</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -182,6 +184,10 @@ export default {
 
 
 <style scoped>
+
+.logo:hover {
+  cursor: pointer;
+}
 
 .golden-color {
   color: #DDB752 !important;

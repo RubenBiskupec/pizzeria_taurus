@@ -4,41 +4,97 @@
 // add form validators
 
 import axios from 'axios';
+import { HttpService } from "@/services/HttpService";
+
 
 export default {
   name: "AccessView",
   data() {
     return {
-      tab: 1,
+      tab: 0,
       tabs: [
           'Accedi', 'Registrati'
       ],
+
+      logInNotification: '',
       logInErrors: [],
-      logInUsername: null,
+      logInEmail: null,
       logInPassword: null,
 
       signUpNotification: '',
       signUpErrors: [],
       signUpFistName: null,
       signUpLastName: null,
-      signUpUsername: null,
       signUpPassword: null,
       signUpConfirmationPassword: null,
       signUpEmail: null,
       signUpCellphoneNumber: null,
       signUpAddress: null,
+
+      httpService: new HttpService(),
     }
   },
   methods: {
     logIn: function () {
+      this.logInErrors = [];
+      let isLogInValid = this.validateLogIn();
+      if (isLogInValid) {
 
+        axios.defaults.headers.common["Authorization"] = "";
+        localStorage.removeItem("token");
+
+        const logInFormData = {
+          email: this.logInEmail,
+          password: this.logInPassword
+        }
+
+        this.httpService.logIn(logInFormData, this.logInSuccessCallback, this.logInErrorCallback);
+      }
     },
+    validateLogIn: function () {
+      if (this.logInEmail === "" || this.logInEmail == null) {
+        this.logInErrors.push("Inserire l'Email");
+      }
+      if (this.logInPassword == null || this.logInPassword.length < 8) {
+        this.logInErrors.push("La password deve essere almeno 8 caretteri");
+      }
+      return !this.logInErrors.length;
+    },
+    logInSuccessCallback: function (responseData) {
+      const token = responseData.auth_token;
+      this.$store.state.token = token;
+      axios.defaults.headers.common["Authorization"] = "Token " + token;
+      localStorage.setItem("token", token);
+      console.log("Added token to localStorage");
+      this.logInNotification = "Accesso eseguito correttamente!";
+    },
+    logInErrorCallback: function (error) {
+      this.signUpErrors.push("Qualcosa e' andato storto. Per favore riprova.");
+      console.log(JSON.stringify(error));
+    },
+
     signUp: function () {
       this.signUpErrors = [];
       this.signUpNotification = '';
+      let isFormValid = this.validateForm();
 
-      if (this.signUpUsername === "" || this.signUpUsername == null) {
-        this.signUpErrors.push("Inserire lo Username");
+      if (isFormValid) {
+
+        const signUpFormData = {
+          email: this.signUpEmail,
+          password: this.signUpPassword,
+          first_name: this.signUpFistName,
+          last_name: this.signUpLastName,
+          address: this.signUpAddress,
+          cellphone_number: this.signUpCellphoneNumber
+        }
+
+        this.httpService.signUp(signUpFormData, this.signUpSuccessCallback, this.signUpErrorCallback);
+      }
+    },
+    validateForm: function() {
+      if (this.signUpEmail === "" || this.signUpEmail == null) {
+        this.signUpErrors.push("Inserire l'Email");
       }
       if (this.signUpPassword == null || this.signUpPassword.length < 8) {
         this.signUpErrors.push("La password deve essere almeno 8 caretteri");
@@ -61,31 +117,15 @@ export default {
       if (this.signUpAddress === "" || this.signUpAddress == null) {
         this.signUpErrors.push("Inserire l'Indirizzo");
       }
-
-      if (!this.signUpErrors.length) {
-
-        const signUpFormData = {
-          username: this.signUpUsername,
-          password: this.signUpPassword,
-          first_name: this.signUpFistName,
-          last_name: this.signUpLastName,
-          email: this.signUpEmail,
-          address: this.signUpAddress,
-          cellphone_number: this.signUpCellphoneNumber
-        }
-
-        axios
-          .post("http://127.0.0.1:8000/api/v1/customers/", signUpFormData)
-          .then(response => {
-            this.signUpNotification = "Account creato con successo. Accedi!";
-          })
-          .catch(error => {
-              // TODO gestici i diversi tipi di errore
-              this.signUpErrors.push("Qualcosa e' andato storto. Per favore riprova.");
-              console.log(JSON.stringify(error));
-          });
-
-      }
+      return !this.signUpErrors.length;
+    },
+    signUpSuccessCallback: function (data) {
+      this.signUpNotification = "Account creato con successo. Accedi!";
+    },
+    signUpErrorCallback: function (error) {
+      // TODO gestici i diversi tipi di errore
+      this.signUpErrors.push("Qualcosa e' andato storto. Per favore riprova.");
+      console.log(JSON.stringify(error));
     }
   },
   mounted() {
@@ -96,6 +136,7 @@ export default {
 
 <template>
   <v-container>
+
     <v-row>
       <v-spacer></v-spacer>
       <v-col
@@ -128,8 +169,8 @@ export default {
                   cols="12"
                 >
                   <v-text-field
-                    label="Username"
-                    v-model="logInUsername"
+                    label="Email"
+                    v-model="logInEmail"
                     required
                     outlined
                     dense
@@ -140,6 +181,7 @@ export default {
                 >
                   <v-text-field
                     label="Password"
+                    type="password"
                     v-model="logInPassword"
                     required
                     outlined
@@ -158,6 +200,22 @@ export default {
               </v-btn>
             </v-card-actions>
             <v-divider class="my-4"></v-divider>
+
+            <v-row
+              v-if="logInNotification != ''"
+              class="px-4 py-2 v-row-sign-up"
+            >
+              <v-col cols="12"
+                class="px-4 py-2 my-2 rounded accent"
+              >
+                {{ logInNotification }}
+              </v-col>
+            </v-row>
+             <v-divider
+              v-if="logInNotification != ''"
+              class="my-4"
+            ></v-divider>
+
             <v-container>
               <v-row>
                 <v-col cols="7">
@@ -227,8 +285,8 @@ export default {
                   md="4"
                 >
                   <v-text-field
-                    label="Username"
-                    v-model="signUpUsername"
+                    label="Email"
+                    v-model="signUpEmail"
                     required
                     outlined
                     dense
@@ -263,19 +321,6 @@ export default {
                   ></v-text-field>
                 </v-col>
 
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-text-field
-                    label="Email"
-                    v-model="signUpEmail"
-                    required
-                    outlined
-                    dense
-                  ></v-text-field>
-                </v-col>
                 <v-col
                   cols="12"
                   sm="6"
