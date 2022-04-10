@@ -8,7 +8,7 @@ from pprint import pprint
 
 class UserManager(auth_models.BaseUserManager):
 
-    def create_user(self, email, password, first_name, last_name, is_staff=False, is_superuser = False):
+    def create_user(self, email, password, first_name, last_name, is_staff=False, is_superuser=False):
         if not email:
             raise ValueError("User must have an email")
 
@@ -50,7 +50,7 @@ class User(auth_models.AbstractUser):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     def __str__(self):
         # TODO aggiungi nome cliente
