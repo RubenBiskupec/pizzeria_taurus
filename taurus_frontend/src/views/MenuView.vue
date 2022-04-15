@@ -18,9 +18,6 @@ export default {
     }
   },
   computed: {
-    menuPizzas() {
-      return this.$store.getters.menuPizzas;
-    },
     availableMenuPizzas() {
       return this.$store.getters.availableMenuPizzas;
     },

@@ -38,10 +38,10 @@ export default {
   },
   methods: {
     navigateTo: function (routerLink){
+      this.dialog = false;
       if (this.$route.name != routerLink){
         this.$router.push(routerLink);
       }
-      this.dialog = false;
     }
   }
 }
@@ -99,6 +99,7 @@ export default {
         <AccessButton></AccessButton>
         <v-dialog
           v-model="dialog"
+          v-bind:retain-focus="false"
           hide-overlay
           transition="dialog-bottom-transition"
         >

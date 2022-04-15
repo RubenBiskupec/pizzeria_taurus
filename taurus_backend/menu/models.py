@@ -13,9 +13,6 @@ class Ingredient(models.Model):
     is_vegetarian = models.BooleanField(default=False)
     is_vegan = models.BooleanField(default=False)
 
-    def get_price(self):
-        return self.price
-
     def __str__(self):
         return "Ingrediente " + self.name
 
@@ -37,9 +34,6 @@ class Size(models.Model):
     description = models.CharField(max_length=255, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
-    def get_price(self):
-        return self.price
-
     def __str__(self):
         return "Grandezza " + self.name
 
@@ -51,9 +45,6 @@ class Dough(models.Model):
     description = models.CharField(max_length=255, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     is_in_stock = models.BooleanField(default=True)
-
-    def get_price(self):
-        return self.price
 
     def __str__(self):
         return "Impasto " + self.name
@@ -93,16 +84,16 @@ class CustomPizza(models.Model):
     )
     is_thick = models.BooleanField(default=False)
     added_ingredients = models.ManyToManyField(Ingredient)
-    notes = models.CharField(max_length=255, null=True)
+    notes = models.CharField(max_length=255, null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def calculate_price(self):
         menu_pizza_price = self.menu_pizza.get_price()
         added_ingredients_price = 0
-        for added_ingredient in self.added_ingredients:
-            added_ingredients_price += added_ingredient.get_price(added_ingredient)
-        addons_price = self.dough.get_price()
-        addons_price += self.size.get_price()
+        for added_ingredient in self.added_ingredients.all():
+            added_ingredients_price += added_ingredient.price
+        addons_price = self.dough.price
+        addons_price += self.size.price
         # FIXME, hardcoded 1, hard to change
         if self.is_thick:
             addons_price += 1
@@ -135,7 +126,7 @@ class HalfMeterPizza(models.Model):
         null=True,
         on_delete=models.CASCADE
     )
-    notes = models.CharField(max_length=255, null=True)
+    notes = models.CharField(max_length=255, null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def calculate_price(self):

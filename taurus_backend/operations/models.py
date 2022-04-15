@@ -67,36 +67,50 @@ class Status(models.Model):
 
 
 class Order(models.Model):
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE
     )
     is_delivery = models.BooleanField(default=True)
     address = models.CharField(max_length=100)
     is_far = models.BooleanField(default=False)
-    order_date_time = models.DateTimeField()
+    order_date_time = models.DateTimeField(auto_now_add=True)
     delivery_date = models.DateField()
     delivery_time = models.TimeField()
-    custom_pizzas = models.ManyToManyField(CustomPizza)
-    half_meter_pizzas = models.ManyToManyField(HalfMeterPizza)
-    beverages = models.ManyToManyField(Beverage)
+    custom_pizzas = models.ManyToManyField(CustomPizza, blank=True)
+    half_meter_pizzas = models.ManyToManyField(HalfMeterPizza, blank=True)
+    beverages = models.ManyToManyField(Beverage, blank=True)
     status = models.ForeignKey(
         Status,
         on_delete=models.CASCADE
     )
-    notes = models.CharField(max_length=255)
+    notes = models.CharField(max_length=255, null=True, blank=True)
     total_price = models.DecimalField(max_digits=6, decimal_places=2)
 
+    def calculate_total_price(self):
+        total_price = 0
+        for custom_pizza in self.custom_pizzas.all():
+            total_price += custom_pizza.price
+        for half_meter_pizza in self.half_meter_pizzas.all():
+            total_price += half_meter_pizza.price
+        for beverage in self.beverages.all():
+            total_price += beverage.price
+        if self.is_delivery:
+            total_price += 2
+        if self.is_far:
+            total_price += 1
+        return total_price
+
     def __str__(self):
-        return "Ordine " + self.id
+        return "Ordine " + str(self.id)
 
 
 class Review(models.Model):
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE
     )
-    order_id = models.ForeignKey(
+    order = models.OneToOneField(
         Order,
         on_delete=models.CASCADE
     )
@@ -106,3 +120,6 @@ class Review(models.Model):
 
     def __str__(self):
         return "Recensione " + self.title
+
+    def set_order(self, order):
+        self.order = order

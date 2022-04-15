@@ -5,10 +5,12 @@ export class HttpService {
   constructor() {
     this.backendPath = process.env.VUE_APP_BACKEND_PATH;
 
-    this.usersPath = "users/";
     this.authPath = "auth/";
+    this.usersPath = "users/";
+    this.mePath = "me/";
     this.tokenPath = "token/";
     this.loginPath = "login/";
+    this.logoutPath = "logout/";
 
     this.statusPath = "statuses/";
     this.ordersPath = "orders/";
@@ -22,6 +24,8 @@ export class HttpService {
     this.customPizzasPath = "custom_pizzas/";
     this.halfMeterPizzasPath = "half_meter_pizzas/";
     this.beveragesPath = "beverages/";
+    this.todayPath = "today/";
+    this.completePath = "/complete/"
 
     this.menuDict = {
       Ingredient: "ingredients/",
@@ -60,6 +64,30 @@ export class HttpService {
       });
   }
 
+  logOut(successCallback, errorCallback) {
+    let url = this.backendPath + this.authPath + this.tokenPath + this.logoutPath;
+    axios
+      .post(url)
+      .then(response => {
+        successCallback(response.data);
+      })
+      .catch(error => {
+          errorCallback(error);
+      });
+  }
+
+  async getUserInfo() {
+    let url = this.backendPath + this.usersPath + this.mePath;
+    let userInfo = {};
+    try {
+      userInfo = await axios
+      .get(url);
+    } catch (error) {
+      console.log(error)
+    }
+    return userInfo.data;
+  }
+
   async getMenuEntity(menuEntity) {
     let url = this.backendPath + this.menuDict[menuEntity];
     let entities = []
@@ -70,8 +98,130 @@ export class HttpService {
       console.log(error, menuEntity);
     }
     return entities.data;
-
   }
+
+  createCustomPizza(customPizza, customPizzaLong, successCallback, errorCallback) {
+    let url = this.backendPath + this.customPizzasPath;
+    debugger
+    axios
+      .post(url, customPizza)
+      .then(response => {
+        successCallback(response.data, customPizzaLong);
+      })
+      .catch(error => {
+        errorCallback(error);
+      });
+  }
+
+  createOrder(order, successCallback, errorCallback) {
+    let url = this.backendPath + this.ordersPath;
+    axios
+      .post(url, order)
+      .then(response => {
+        successCallback(response.data);
+      })
+      .catch(error => {
+        errorCallback(error);
+      });
+  }
+
+  async getOrderUserList() {
+    let url = this.backendPath + this.ordersPath + this.mePath;
+    let orderList = [];
+    try {
+      orderList = await axios
+      .get(url, {})
+    } catch (error) {
+      console.log(error);
+    }
+    return orderList.data;
+  }
+
+  async getTodayOrders() {
+    let url = this.backendPath + this.ordersPath + this.todayPath;
+    let orderList = [];
+    try {
+      orderList = await axios
+      .get(url, {})
+    } catch (error) {
+      console.log(error);
+    }
+    return orderList.data;
+  }
+
+  completeOrder(order, successCallback) {
+    let url = this.backendPath + this.ordersPath + order.id + this.completePath;
+    axios
+      .post(url, order)
+      .then(response => {
+        successCallback(response.data);
+      })
+      .catch(error => {
+        return error;
+      });
+  }
+
+  submitReview(reviewForm, successCallback, errorCallback) {
+    let url = this.backendPath + this.reviewsPath;
+    axios
+      .post(url, reviewForm)
+      .then(response => {
+        successCallback(response.data);
+      })
+      .catch(error => {
+        errorCallback(error);
+      });
+  }
+
+  updateReview(reviewForm, successCallback, errorCallback) {
+    let url = this.backendPath + this.reviewsPath + reviewForm.id;
+    axios
+      .put(url, reviewForm)
+      .then(response => {
+        successCallback(response.data);
+      })
+      .catch(error => {
+        errorCallback(error);
+      });
+  }
+
+  deleteReview(id, successCallback, errorCallback) {
+    let url = this.backendPath + this.reviewsPath + id;
+    axios
+      .delete(url, id)
+      .then(response => {
+        successCallback(response.data);
+      })
+      .catch(error => {
+        errorCallback(error);
+      });
+  }
+
+  async getReviews() {
+    let url = this.backendPath + this.reviewsPath;
+    let reviews = [];
+    try {
+      reviews = await axios
+      .get(url, {})
+    } catch (error) {
+      console.log(error);
+    }
+    return reviews.data;
+  }
+
+  async getReview(orderId) {
+    let url = this.backendPath + this.reviewsPath + this.ordersPath + orderId;
+    let review = {};
+    try {
+      review = await axios
+      .get(url, {})
+    } catch (error) {
+      console.log(error);
+    }
+    return review.data;
+  }
+
+
 
 
 
