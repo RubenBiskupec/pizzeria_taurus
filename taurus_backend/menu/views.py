@@ -12,6 +12,7 @@ from . serializers import IngredientSerializer, PizzaTypeSerializer, SizeSeriali
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def ingredients(request):
+
     ingredient_list = Ingredient.objects.all()
     serializer = IngredientSerializer(ingredient_list, many=True)
     return Response(serializer.data)
@@ -20,6 +21,7 @@ def ingredients(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def pizza_types(request):
+
     pizza_type_list = PizzaType.objects.all()
     serializer = PizzaTypeSerializer(pizza_type_list, many=True)
     return Response(serializer.data)
@@ -28,6 +30,7 @@ def pizza_types(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def sizes(request):
+
     size_list = Size.objects.all()
     serializer = SizeSerializer(size_list, many=True)
     return Response(serializer.data)
@@ -36,6 +39,7 @@ def sizes(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def doughs(request):
+
     dough_list = Dough.objects.all()
     serializer = DoughSerializer(dough_list, many=True)
     return Response(serializer.data)
@@ -44,6 +48,7 @@ def doughs(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def menu_pizzas(request):
+
     menu_pizza_list = MenuPizza.objects.all()
     serializer = MenuPizzaSerializer(menu_pizza_list, many=True)
     return Response(serializer.data)
@@ -54,23 +59,14 @@ def menu_pizzas(request):
 def custom_pizzas(request):
 
     if request.method == 'GET':
+
         custom_pizza_list = CustomPizza.objects.all()
         serializer = CustomPizzaSerializer(custom_pizza_list, many=True)
         return Response(serializer.data)
 
     if request.method == 'POST':
+
         data = request.data
-        #
-        # {
-        #     "menu_pizza": 4,
-        #     "dough": 1,
-        #     "size": 1,
-        #     "added_ingredients": [
-        #         4
-        #     ],
-        #     "notes": " aaa",
-        #     "price": 7
-        # }
 
         menu_pizza_id = data["menu_pizza"]
         menu_pizza = MenuPizza.objects.get(id=menu_pizza_id)
@@ -150,6 +146,7 @@ def half_meter_pizza_details(request, pk=None):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def beverages(request):
+
     beverage_list = Beverage.objects.all()
     serializer = BeverageSerializer(beverage_list, many=True)
     return Response(serializer.data)

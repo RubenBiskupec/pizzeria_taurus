@@ -164,7 +164,7 @@ def test_create_review():
         is_delivery=True,
         notes="",
         status=1,
-        total_price=Decimal(6),
+        total_price=Decimal(8),
         user=1
     )
 

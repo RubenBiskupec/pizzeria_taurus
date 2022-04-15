@@ -95,26 +95,6 @@ class CustomPizzaSerializer(serializers.ModelSerializer):
             "notes",
             "price"
         )
-        #read_only_field = ("dough")
-
-    # def to_representation(self, instance):
-    #     self.fields["dough"] = DoughSerializer(read_only=True)
-    #     return super(CustomPizzaSerializer, self).to_representation(instance)
-
-    # def create(self, validated_data):
-    #     dough_data = validated_data.pop("dough")
-    #     dough = Dough.objects.get(id=dough_data["id"])
-    #
-    #     custom_pizza_instance = CustomPizza.objects.create(dough=dough, **validated_data)
-    #     return custom_pizza_instance
-
-    # def create(self, validated_data):
-    #     pprint(validated_data)
-    #     custom_pizza = CustomPizza.objects.create(**validated_data)
-    #     ingredients = validated_data.pop("added_ingredients")
-    #     for ingredient in ingredients:
-    #         custom_pizza.added_ingredients.add(ingredient)
-    #     return super.create()
 
 
 class HalfMeterPizzaSerializer(serializers.ModelSerializer):
@@ -130,9 +110,6 @@ class HalfMeterPizzaSerializer(serializers.ModelSerializer):
             "notes",
             "price"
         )
-
-    # def create(self, validated_data):
-    #     return HalfMeterPizza.objects.create(**validated_data)
 
 
 class BeverageSerializer(serializers.ModelSerializer):

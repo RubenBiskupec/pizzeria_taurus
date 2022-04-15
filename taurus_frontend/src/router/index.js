@@ -7,7 +7,8 @@ import OrderView from "@/views/OrderView";
 import AccessView from "@/views/AccessView";
 import AccountView from "@/views/AccountView";
 import store from "@/store";
-import CustomerOrders from "@/views/TodayCustomerOrdersView";
+import TodayCustomerOrdersView from "@/views/TodayCustomerOrdersView";
+import AllCustomerOrdersView from "@/views/AllCustomerOrdersView";
 
 
 Vue.use(VueRouter)
@@ -43,14 +44,14 @@ const routes = [
   },
   {
     path: '/admin/orders/today',
-    name: 'customerOrders',
-    component: CustomerOrders,
+    name: 'todayCustomerOrdersView',
+    component: TodayCustomerOrdersView,
   },
   ,
   {
     path: '/admin/orders',
-    name: 'customerAllOrders',
-    component: CustomerAllOrders,
+    name: 'allCustomerOrdersView',
+    component: AllCustomerOrdersView,
   },
   {
     path: '/access',

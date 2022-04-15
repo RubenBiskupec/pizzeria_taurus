@@ -56,7 +56,7 @@ def test_log_in_user():
     assert response.status_code == 200
 
 
-#todo use fixture
+# todo use fixture
 @pytest.mark.django_db
 def test_log_in_user_fail():
 

@@ -149,6 +149,19 @@ export class HttpService {
     return orderList.data;
   }
 
+  async getOrdersByDate(start_date, end_date) {
+    // es. http://localhost:8000/api/v1/orders/?delivery_date%3C=2022-04-15&delivery_date%3E=2022-04-10
+    let url = this.backendPath + this.ordersPath + "?delivery_date>=" + start_date + "&delivery_date<=" + end_date;
+    let orderList = [];
+    try {
+      orderList = await axios
+      .get(url, {})
+    } catch (error) {
+      console.log(error);
+    }
+    return orderList.data;
+  }
+
   completeOrder(order, successCallback) {
     let url = this.backendPath + this.ordersPath + order.id + this.completePath;
     axios

@@ -46,7 +46,7 @@ export default {
         sm="6"
         md="4"
       >
-        <v-card v-show="order.status">
+        <v-card>
           <v-card-title>
             Ordine di {{ order.user.first_name }} {{ order.user.last_name }}
           </v-card-title>
