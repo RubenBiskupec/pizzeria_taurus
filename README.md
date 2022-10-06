@@ -1,10 +1,10 @@
-#taurus_backend
+# Pizzeria Taurus
 
 ![alt text](https://github.com/RubenBiskupec/pizzeria_taurus/blob/develop/menu.png)
 
 Check the report for a detailed description of the project and its architecture (in italian).
 
-## Project setup
+## Project setup - backend
 
 > source venv/bin/activate 
 
@@ -24,10 +24,7 @@ Django version 4.0.3, using settings 'taurus_backend.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 
-
-# taurus_frontend
-
-## Project setup
+## Project setup - frontend
 ```
 npm install
 ```
