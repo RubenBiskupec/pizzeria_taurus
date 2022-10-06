@@ -1,5 +1,9 @@
 #taurus_backend
 
+![alt text](https://github.com/RubenBiskupec/pizzeria_taurus/blob/develop/menu.png)
+
+Check the report for a detailed description of the project and its architecture (in italian).
+
 ## Project setup
 
 > source venv/bin/activate 
