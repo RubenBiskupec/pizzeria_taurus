@@ -1,8 +1,18 @@
 # Pizzeria Taurus
 
+This is the project for a full stack mobile friendly pizzeria website. <br />
+
+- All of the menu items/pizzas are editable trough CRUD operations in the DB by the administrator. 
+- Users can create an account to place orders and reviews. 
+- Backend is based on Django, Django Rest Framework and SQLite. 
+- Frontend was developed with Vue, Vuetify, Axios, Vue Router, Vuex. 
+- User authentication is done trough JWT set in the local storage of the website.
+
+Check the report "RelazioneTecnologieWebRubenBiskupec.pdf" for a detailed description of the project and its architecture (in italian). <br />
+
+
 ![alt text](https://github.com/RubenBiskupec/pizzeria_taurus/blob/develop/menu.png)
 
-Check the report for a detailed description of the project and its architecture (in italian).
 
 ## Project setup - backend
 
